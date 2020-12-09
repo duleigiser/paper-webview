@@ -2,6 +2,7 @@ import './App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // import Exam from '@/views/exam';
 import Exam from '@/views/exam/test';
+import Swiper from '@/components/swiper';
 function App() {
   return (
     <Router>
@@ -10,8 +11,8 @@ function App() {
           <Route exact path='/'>
             <Exam />
           </Route>
-          <Route path='/about'>
-            <About />
+          <Route path='/swiper'>
+            <Swiper />
           </Route>
           <Route path='/dashboard'>
             <Dashboard />
@@ -23,14 +24,6 @@ function App() {
 }
 
 export default App;
-
-function About() {
-  return (
-    <div>
-      <h2>About</h2>
-    </div>
-  );
-}
 
 function Dashboard() {
   return (
