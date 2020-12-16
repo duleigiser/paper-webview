@@ -5,7 +5,7 @@ export const UPDATE_ANSWER_CARD_LIST = 'UPDATE_ANSWER_CARD_LIST';
 
 export function updateQuestionList(data) {
   return dispatch => {
-    console.log(data);
+    console.log(data, 'aciton');
     dispatch({
       type: UPDATE_QUESTION_LIST,
       payload: { ...data }

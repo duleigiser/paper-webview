@@ -22,27 +22,29 @@ const SwiperComp = () => {
   const superSwiperCurrentIndex = 0;
   const [relativeY, changeRelativeY] = useState(initRelativeY);
 
-  const { questionList, age } = useSelector(state => {
+  const { questionList, age, option, status } = useSelector(state => {
+    console.log('useselector 计算');
     return {
       age: state.user.age || '',
       questionList: state.exam.questionList,
-      superSwiperCurrentIndex: state.exam.superSwiperCurrentIndex
+      superSwiperCurrentIndex: state.exam.superSwiperCurrentIndex,
+      option: state.exam.option,
+      status: state.exam.status
     };
   }, shallowEqual);
-  // console.log(age)
-  console.log(questionList, 'comp');
   const dispatch = useDispatch();
 
   const changeQuestionList = useCallback(
-    (subjectNum, option, status) => {
-      console.log(subjectNum, option, status);
+    (option, status) => {
+      console.log(option, status);
       dispatch(
         setQuestionListAction({
-          questionList
+          option,
+          status
         })
       );
     },
-    [questionList, dispatch]
+    [status, option, dispatch]
   );
 
   const superSwiperChange = swiper => {};
@@ -117,11 +119,8 @@ const SwiperComp = () => {
    * @return null
    */
   const clickItem = (status, option, subjectNum, subjectSection) => {
-    // console.log(status, option, subjectNum, subjectSection)
-
-    questionList[0].subQuestion[0].optionList.map(item => Object.assign(item, { status: false }));
-    questionList[0].subQuestion[0].optionList[0].status = true;
-    changeQuestionList(subjectNum, option, status);
+    console.log(status, option, subjectNum, subjectSection);
+    changeQuestionList(option, status);
   };
   useEffect(() => {
     console.log('effect invoked');
