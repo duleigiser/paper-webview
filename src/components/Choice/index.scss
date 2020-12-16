@@ -1,0 +1,48 @@
+.contianer {
+  min-height: 54px;
+  //line-height: 74px;
+  font-size: 14px;
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 7px;
+
+  .hasBorderRadis {
+    border-radius: 22px;
+  }
+
+  .noBorderRadis {
+    border-radius: 0;
+  }
+
+  .key {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    border-radius: 100%;
+    text-align: center;
+    font-size: 14px;
+    margin-left: 20px;
+  }
+
+  .keySelect {
+    color: #fff;
+    border: 1px solid #1eb895;
+    background-color: #1eb895;
+  }
+
+  .keyUnSelect {
+    color: #1eb895;
+    border: 1px solid #eee;
+  }
+
+  .value {
+    margin-left: 12px;
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+    word-break: break-all;
+    line-height: 20px;
+  }
+}

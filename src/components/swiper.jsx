@@ -1,26 +1,51 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { CDN } from '@/config/constant';
+// import { CDN } from '@/config/constant';
+import { useState, useCallback, useEffect } from 'react';
 import Drag from './drag';
+import SingleChoice from './singleChoice';
+import 'swiper/swiper-bundle.css';
+// import data from '../config/paper.json';
 import './swiper.scss';
-import data from '../config/paper.json';
+import { filterContent } from '@/utils';
+import { transformOption } from '@/utils/chooseUtil';
+// import api from '@/api/paper'
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import { setUserInfo as setUserInfoAction } from '../actions/user';
+import { updateQuestionList as setQuestionListAction } from '../actions/exam';
 let superSwiper;
 let subSwiper;
 const NEXT = 'next';
 const PREV = 'prev';
+let initRelativeY = (window.innerHeight * 1) / 3;
+
 const SwiperComp = () => {
   const superSwiperCurrentIndex = 0;
-  const slides = [];
-  const slides2 = [];
-  console.log(data);
-  const superSwiperChange = swiper => {
-    // console.log(swiper.activeIndex)
-    // if(swiper.swipeDirection==='next') {
-    //   subSwiper.slideNext(500, false)
-    // } else {
-    //   subSwiper.slidePrev(500, false)
-    // }
-    // setSuperSwiperIndex(swiper.activeIndex)
-  };
+  const [relativeY, changeRelativeY] = useState(initRelativeY);
+
+  const { questionList, age } = useSelector(state => {
+    return {
+      age: state.user.age || '',
+      questionList: state.exam.questionList,
+      superSwiperCurrentIndex: state.exam.superSwiperCurrentIndex
+    };
+  }, shallowEqual);
+  // console.log(age)
+  console.log(questionList, 'comp');
+  const dispatch = useDispatch();
+
+  const changeQuestionList = useCallback(
+    (subjectNum, option, status) => {
+      console.log(subjectNum, option, status);
+      dispatch(
+        setQuestionListAction({
+          questionList
+        })
+      );
+    },
+    [questionList, dispatch]
+  );
+
+  const superSwiperChange = swiper => {};
   // 滑动最后一个小题 滑动大题
   function subSwiperTransitionEnd(swiper) {
     let { isBeginning, isEnd } = swiper;
@@ -47,58 +72,110 @@ const SwiperComp = () => {
       swiper[type] = undefined;
     }
   }
+  // 上边swiperslide 渲染
   function superSlide() {
-    return (
-      data &&
-      data.questionList.map((item, index) => {
-        switch (item.questionType) {
-          case 'READING_COMPREHENSION':
-            return (
-              <SwiperSlide key={`slide-${index}`} style={{ width: '100%' }}>
-                <div>完形填空(10分)</div>
-                <div className='questionContent' dangerouslySetInnerHTML={{ __html: item.questionContent }}></div>
-              </SwiperSlide>
-            );
-          case '"COMPREHENSIVE"':
-            return (
-              <SwiperSlide
-                key={`slide-${index}`}
-                dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
-            );
-          case 'MANY_TO_MANY':
-            return (
-              <SwiperSlide
-                key={`slide-${index}`}
-                dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
-            );
-          case 'ESSAY':
-            return (
-              <SwiperSlide
-                key={`slide-${index}`}
-                dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
-            );
-          default:
-            return null;
-        }
+    return questionList.map((item, index) => {
+      switch (item.questionType) {
+        case 'READING_COMPREHENSION':
+          return (
+            <SwiperSlide key={`slide-${index}`} style={{ width: '100%' }}>
+              <div>完形填空(10分)</div>
+              <div
+                className='questionContent'
+                dangerouslySetInnerHTML={{ __html: filterContent(item.questionContent) }}></div>
+            </SwiperSlide>
+          );
+        case '"COMPREHENSIVE"':
+          return (
+            <SwiperSlide
+              key={`slide-${index}`}
+              dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
+          );
+        case 'MANY_TO_MANY':
+          return (
+            <SwiperSlide
+              key={`slide-${index}1`}
+              dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
+          );
+        case 'ESSAY':
+          return (
+            <SwiperSlide
+              key={`slide-${index}2`}
+              dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
+          );
+        default:
+          return null;
+      }
+    });
+  }
+  /**
+   * 改变选择题和判断题的状态
+   * @param status true-选中 false-取消
+   * @param option 选项索引
+   * @param subjectNum 大题题号
+   * @param subjectSection 题目区域 super-大题 sub-小题
+   * @return null
+   */
+  const clickItem = (status, option, subjectNum, subjectSection) => {
+    // console.log(status, option, subjectNum, subjectSection)
+
+    questionList[0].subQuestion[0].optionList.map(item => Object.assign(item, { status: false }));
+    questionList[0].subQuestion[0].optionList[0].status = true;
+    changeQuestionList(subjectNum, option, status);
+  };
+  useEffect(() => {
+    console.log('effect invoked');
+  });
+  console.log('func swiper render');
+  // 下边swiperslde 渲染
+  function subSlide() {
+    return questionList[superSwiperCurrentIndex].subQuestion.map((item, index) => {
+      console.log(questionList, 'subslide');
+      switch (questionList[superSwiperCurrentIndex].questionType) {
+        case 'READING_COMPREHENSION':
+          return (
+            <SwiperSlide key={`subslide-${index}`} style={{ width: '100%' }}>
+              <SingleChoice
+                data={transformOption(item)}
+                clickItem={(status, option) => {
+                  clickItem(status, option, index, 'sub');
+                }}
+              />
+            </SwiperSlide>
+          );
+        case '"COMPREHENSIVE"':
+          return (
+            <SwiperSlide
+              key={`subslide-${index}`}
+              dangerouslySetInnerHTML={{ __html: item.questionContent }}></SwiperSlide>
+          );
+        case 'MANY_TO_MANY':
+          return <SwiperSlide key={`subslide-${index}`}></SwiperSlide>;
+        case 'ESSAY':
+          return <SwiperSlide key={`subslide-${index}1`}></SwiperSlide>;
+        default:
+          return null;
+      }
+    });
+  }
+  function relativeYChange(_relativeY) {
+    // console.log(_relativeY)
+    changeRelativeY(_relativeY);
+  }
+  const addAge = useCallback(() => {
+    dispatch(
+      setUserInfoAction({
+        age: age + 1
       })
     );
-  }
-  for (let i = 0; i < 5; i++) {
-    slides.push(
-      <SwiperSlide key={`slide-${i}`} style={{ listStyle: 'none' }}>
-        <img src={`${CDN}/pc/articles/rec${i + 1}.png`} alt={`slide ${i}`} />
-      </SwiperSlide>
-    );
-    slides2.push(
-      <SwiperSlide key={`slide-${i + 5}`} style={{ listStyle: 'none' }}>
-        <img src={`${CDN}/pc/articles/rec${i + 1}.png`} alt={`slide ${i + 5}`} />
-      </SwiperSlide>
-    );
-  }
+  }, [age, dispatch]);
   return (
     <>
+      <button onClick={addAge}>age+1</button>
+      <div>{age}</div>
       <Swiper
         id='main'
+        style={{ height: window.innerHeight - relativeY - 10 + 'px' }}
         spaceBetween={0}
         slidesPerView={1}
         initialSlide={superSwiperCurrentIndex}
@@ -109,7 +186,7 @@ const SwiperComp = () => {
         {/* {slides} */}
         {superSlide()}
       </Swiper>
-      <Drag>
+      <Drag relativeY={relativeY} relativeYChange={relativeYChange}>
         <Swiper
           id='controller'
           className='subSwiper'
@@ -117,7 +194,8 @@ const SwiperComp = () => {
           slidesPerView={1}
           onSwiper={swiper => (subSwiper = swiper)}
           onTransitionEnd={subSwiperTransitionEnd}>
-          {slides2}
+          {/* {slides2} */}
+          {subSlide()}
         </Swiper>
       </Drag>
     </>

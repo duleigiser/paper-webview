@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { BASEURL, BASEURLS } from '@/config/constant';
-
+import { createSign } from '@/utils';
 /**
  *
  * @param {*}
@@ -20,6 +20,7 @@ const request = async ({ url, data, params, method, headers, host }) => {
   // 根据hostName 切换不同的baseURL
   // console.log(BASEURLS, host)
   requestConf.url = BASEURLS[host] + url;
+
   if (method.toUpperCase() === 'POST') {
     requestConf.headers = {
       'Content-Type': 'application/json;',
@@ -30,11 +31,9 @@ const request = async ({ url, data, params, method, headers, host }) => {
       ...headers
     };
   }
+  Object.assign(requestConf.headers, createSign());
   return await axios.request(requestConf).then(res => {
     if (handleRes(res)) {
-      if (cacheOptions && cacheOptions.key) {
-        cache.put(cacheOptions.key, JSON.stringify(res.data), cacheOptions.ttl || 300000);
-      }
       return res.data;
     }
   });
@@ -94,5 +93,4 @@ const get = async (url, params, host = 'BASEURL') => {
 export default class Base {
   static get = get;
   static post = post;
-  static cache = cache;
 }

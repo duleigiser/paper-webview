@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // import Exam from '@/views/exam';
-import Exam from '@/views/exam/test';
+// import Exam from '@/views/exam/test';
 import Swiper from '@/components/swiper';
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
       <>
         <Switch>
           <Route exact path='/'>
-            <Exam />
+            <Dashboard></Dashboard>
           </Route>
           <Route path='/swiper'>
             <Swiper />

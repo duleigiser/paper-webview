@@ -5,16 +5,27 @@
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   .swiper-slide {
-    padding: 20px 20px 0;
+    padding: 20px;
     box-sizing: border-box;
+    overflow-y: auto;
   }
   .__blank__placeholder {
-    height: 10px;
+    height: 13px;
     width: 80px;
     border-bottom: 1px solid black;
     display: inline-block;
-    margin: 0 2px;
+    margin: 0px;
+    padding-bottom: 4px;
+    position: relative;
+    ._blank_num {
+      position: absolute;
+      left: 20px;
+      top: -8px;
+    }
   }
+  // ._blank {
+  //   position: relative;
+  // }
 }
 .subSwiper {
   height: 100%;

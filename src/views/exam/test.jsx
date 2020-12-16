@@ -11,7 +11,7 @@ let draggableEle;
 let dropBoxEle;
 
 let touchstartnY;
-let touchPointRelativeDragDomY;
+// let touchPointRelativeDragDomY;
 let relativeY = (window.innerHeight * 1) / 3;
 let relativeY_min = (window.innerHeight * 1) / 5; // 拖动组件最大值
 let relativeY_max = (window.innerHeight * 4) / 5; // 拖动组件最小值
@@ -19,7 +19,7 @@ let subSwipperHeight;
 
 const Test = () => {
   const [superSwiperCurrentIndex, setSuperSwiperIndex] = useState(2);
-
+  console.log(setSuperSwiperIndex);
   const slides = [];
   const slides2 = [];
 
@@ -149,6 +149,7 @@ const Test = () => {
           className='subSwiper'
           spaceBetween={0}
           slidesPerView={1}
+          //eslint-disable-next-line
           onSwiper={swiper => (subSwiper = swiper)}
           // onTransitionStart={subSwiperTransitionStart}
           onTransitionEnd={subSwiperTransitionEnd}>
